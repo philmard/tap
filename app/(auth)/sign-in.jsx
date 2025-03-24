@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -13,7 +13,11 @@ import {
 
 import { images } from "../../constants";
 import { CustomButton, FormField } from "../../components";
-import { getCurrentUser, signIn } from "../../lib/appwrite";
+import {
+  getCurrentUser,
+  signIn,
+  createRandomTestUser,
+} from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
 
 const SignIn = () => {
@@ -46,13 +50,20 @@ const SignIn = () => {
     }
   };
 
+  const scrollViewRef = useRef(null);
+
+  const scrollUp = useCallback(() => {
+    // Scroll up by 100 pixels when form field is focused
+    scrollViewRef.current?.scrollTo({ y: 100, animated: true });
+  }, []);
+
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView>
+      <ScrollView ref={scrollViewRef}>
         <View
           className="w-full flex justify-center h-full px-4 my-6"
           style={{
-            minHeight: Dimensions.get("window").height - 100,
+            minHeight: Dimensions.get("window").height,
           }}
         >
           <Image
@@ -71,6 +82,7 @@ const SignIn = () => {
             handleChangeText={(e) => setForm({ ...form, email: e })}
             otherStyles="mt-7"
             keyboardType="email-address"
+            onFocus={scrollUp}
           />
 
           <FormField
@@ -78,6 +90,7 @@ const SignIn = () => {
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyles="mt-7"
+            onFocus={scrollUp}
           />
 
           <CustomButton
@@ -102,11 +115,13 @@ const SignIn = () => {
           {/* Redirect to Landing Page Button */}
           <View className="mt-10">
             <Button
-              title="Go to Landing Page"
-              onPress={() => router.replace("/")}
+              title="Go to Landing Page / Create random user"
+              onPress={createRandomTestUser}
+              /* onPress={() => router.replace("/")} */
               color="#ff6347"
             />
           </View>
+          <View style={{ height: 200, backgroundColor: "transparent" }} />
         </View>
       </ScrollView>
     </SafeAreaView>

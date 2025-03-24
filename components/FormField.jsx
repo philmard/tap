@@ -9,6 +9,7 @@ const FormField = ({
   placeholder,
   handleChangeText,
   otherStyles,
+  onFocus,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +26,7 @@ const FormField = ({
           placeholderTextColor="#7B7B8B"
           onChangeText={handleChangeText}
           secureTextEntry={title === "Password" && !showPassword}
+          onFocus={onFocus}
           {...props}
         />
 

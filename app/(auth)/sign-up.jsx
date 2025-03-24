@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, ScrollView, Dimensions, Alert, Image } from "react-native";
@@ -37,13 +37,20 @@ const SignUp = () => {
     }
   };
 
+  const scrollViewRef = useRef(null);
+
+  const scrollUp = useCallback(() => {
+    // Scroll up by 180 pixels when form field is focused, to show the SignUp button better
+    scrollViewRef.current?.scrollTo({ y: 180, animated: true });
+  }, []);
+
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView>
+      <ScrollView ref={scrollViewRef}>
         <View
           className="w-full flex justify-center h-full px-4 my-6"
           style={{
-            minHeight: Dimensions.get("window").height - 100,
+            minHeight: Dimensions.get("window").height,
           }}
         >
           <Image
@@ -61,6 +68,7 @@ const SignUp = () => {
             value={form.username}
             handleChangeText={(e) => setForm({ ...form, username: e })}
             otherStyles="mt-10"
+            onFocus={scrollUp}
           />
 
           <FormField
@@ -69,6 +77,7 @@ const SignUp = () => {
             handleChangeText={(e) => setForm({ ...form, email: e })}
             otherStyles="mt-7"
             keyboardType="email-address"
+            onFocus={scrollUp}
           />
 
           <FormField
@@ -76,6 +85,7 @@ const SignUp = () => {
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyles="mt-7"
+            onFocus={scrollUp}
           />
 
           <CustomButton
@@ -96,6 +106,7 @@ const SignUp = () => {
               Login
             </Link>
           </View>
+          <View style={{ height: 300, backgroundColor: "transparent" }} />
         </View>
       </ScrollView>
     </SafeAreaView>
