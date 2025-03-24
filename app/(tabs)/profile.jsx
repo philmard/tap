@@ -10,32 +10,33 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import { InfoBox } from "../../components";
 
 const Profile = () => {
-  const { user, setUser, setIsLogged } = useGlobalContext();
-  const [counter, setCounter] = useState(user?.counter || 0);
+  const { user, setUser, setIsLogged, localCounter } = useGlobalContext(); // Show the Local Counter (!)
+  // const [counter, setCounter] = useState(user?.counter || 0);
   const [loading, setLoading] = useState(false);
 
+  /* NOT USEFUL, SINCE IM SHOWING THE LOCAL COUNTER: */
   // Fetch user details and counter from the database
-  const fetchUserDetails = async () => {
-    try {
-      setLoading(true);
-      const updatedUser = await getCurrentUser(); // Fetch the updated user data
-      if (updatedUser) {
-        setUser(updatedUser); // Update global user state
-        setCounter(updatedUser.counter); // Update counter state
-      }
-    } catch (error) {
-      console.error("Failed to fetch user details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchUserDetails = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const updatedUser = await getCurrentUser(); // Fetch the updated user data
+  //     if (updatedUser) {
+  //       // setUser(updatedUser); // Update global user state
+  //       // setCounter(updatedUser.counter); // Update counter state
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch user details:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Fetch user details when the screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      fetchUserDetails();
-    }, [])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchUserDetails();
+  //   }, [])
+  // );
 
   // Logout function
   const logout = async () => {
@@ -89,7 +90,7 @@ const Profile = () => {
                 </Text>
                 <View className="bg-secondary text-white text-3xl font-bold py-2 px-4 rounded-lg mt-3">
                   <Text className="text-black text-3xl font-bold">
-                    {counter || 0}
+                    {localCounter || 0}
                   </Text>
                 </View>
                 <Text className="text-white text-2xl font-bold text-center">

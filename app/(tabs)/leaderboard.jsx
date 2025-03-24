@@ -4,11 +4,13 @@ import { ScrollView, View, Text, Image, RefreshControl } from "react-native";
 import { databases, appwriteConfig } from "../../lib/appwrite"; // Import databases and config
 import { Query } from "react-native-appwrite";
 import { useFocusEffect } from "@react-navigation/native"; // React Navigation hook
+import { useGlobalContext } from "../../context/GlobalProvider"; // Added import
 
 const Leaderboard = () => {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const { user: currentUser, localCounter } = useGlobalContext(); // Get current user and local counter
 
   const fetchLeaderboard = async () => {
     try {
@@ -18,13 +20,32 @@ const Leaderboard = () => {
         appwriteConfig.userCollectionId,
         [Query.orderDesc("counter"), Query.limit(100)]
       );
-      setLeaders(result.documents);
+
+      // Always use fresh localCounter from context
+      const updatedLeaders = result.documents.map((leader) =>
+        leader.$id === currentUser?.$id
+          ? { ...leader, counter: localCounter }
+          : leader
+      );
+
+      setLeaders(updatedLeaders.sort((a, b) => b.counter - a.counter));
     } catch (error) {
       console.error("Failed to fetch leaderboard:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  // Add current user with latest localCounter if missing
+  useEffect(() => {
+    if (currentUser && !leaders.some((l) => l.$id === currentUser.$id)) {
+      setLeaders((prev) =>
+        [...prev, { ...currentUser, counter: localCounter }].sort(
+          (a, b) => b.counter - a.counter
+        )
+      );
+    }
+  }, [currentUser, localCounter, leaders]);
 
   // Handle pull-to-refresh
   const onRefresh = async () => {
@@ -33,11 +54,11 @@ const Leaderboard = () => {
     setRefreshing(false);
   };
 
-  // Fetch leaderboard when screen is focused
+  // Force initial load with latest context values
   useFocusEffect(
     useCallback(() => {
       fetchLeaderboard();
-    }, [])
+    }, [currentUser?.$id, localCounter]) // Re-fetch when these change
   );
 
   return (
@@ -81,7 +102,11 @@ const Leaderboard = () => {
                   key={leader.$id}
                   className={`flex-row items-center ${
                     index % 2 === 0 ? "bg-black-200" : "bg-black-100"
-                  } p-2`}
+                  } p-2${
+                    leader.$id === currentUser?.$id
+                      ? "border-2 border-accent"
+                      : ""
+                  }`}
                 >
                   <Text className="flex-1 text-gray-100 text-center">
                     {index + 1}
@@ -95,6 +120,7 @@ const Leaderboard = () => {
                   </View>
                   <Text className="flex-1 text-gray-100 text-center">
                     {leader.username}
+                    {leader.$id === currentUser?.$id && " (You)"}
                   </Text>
                   <Text className="flex-1 text-gray-100 text-center">
                     {leader.counter}

@@ -9,6 +9,7 @@ const GlobalProvider = ({ children }) => {
   const [isLogged, setIsLogged] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [localCounter, setLocalCounter] = useState(0); // Add counter state
 
   useEffect(() => {
     getCurrentUser()
@@ -16,9 +17,11 @@ const GlobalProvider = ({ children }) => {
         if (res) {
           setIsLogged(true);
           setUser(res);
+          setLocalCounter(res.counter || 0); // Initialize counter from user data
         } else {
           setIsLogged(false);
           setUser(null);
+          setLocalCounter(0);
         }
       })
       .catch((error) => {
@@ -37,6 +40,8 @@ const GlobalProvider = ({ children }) => {
         user,
         setUser,
         loading,
+        localCounter, // Expose counter
+        setLocalCounter, // Expose setter
       }}
     >
       {children}

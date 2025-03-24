@@ -1,23 +1,38 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View, TouchableOpacity } from "react-native";
 import * as Haptics from "expo-haptics";
 import { databases, appwriteConfig } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { ENCOURAGEMENT_PHRASES } from "../../constants/messages";
 
 const DEFAULT_COLOR = "#1E1E1E"; // Default background color
 const MAX_GREEN_COLOR = "#1E9E1E"; // Target green color
 
+const getRandomPhrase = () => {
+  const randomIndex = Math.floor(Math.random() * ENCOURAGEMENT_PHRASES.length);
+  return ENCOURAGEMENT_PHRASES[randomIndex];
+};
+
+const getRandomInterval = () => Math.floor(Math.random() * 11) + 5; // 5-15 taps
+
 const Home = () => {
-  const { user } = useGlobalContext(); // Access current user from context
-  const [counter, setCounter] = useState(0);
+  const { user, localCounter, setLocalCounter } = useGlobalContext(); // Access current user and counter from context
+  // const [counter, setCounter] = useState(0);
   const [bgColor, setBgColor] = useState(DEFAULT_COLOR); // Background color state
   const [lastTapTime, setLastTapTime] = useState(Date.now());
+  const [currentPhrase, setCurrentPhrase] = useState("Tap anywhere to count!");
+
+  const tapsSinceLastUpdate = useRef(0);
+  const dbCounterRef = useRef(0); // Track taps since last database update
+  const tapsSincePhraseChange = useRef(0);
+  const nextPhraseThreshold = useRef(getRandomInterval());
 
   // Initialize counter with user's current value on component mount
   useEffect(() => {
     if (user && user.counter !== undefined) {
-      setCounter(user.counter);
+      setLocalCounter(user.counter);
+      dbCounterRef.current = user.counter; // Initialize database counter ref
     }
   }, [user]);
 
@@ -48,21 +63,39 @@ const Home = () => {
 
       // Update the counter and haptic feedback
       triggerHaptic();
-      const newCount = counter + 1;
-      setCounter(newCount);
+      const newCount = localCounter + 1;
+      setLocalCounter(newCount); // update local counter (global context)
+
+      // Update phrase logic
+      tapsSincePhraseChange.current += 1;
+      if (tapsSincePhraseChange.current >= nextPhraseThreshold.current) {
+        setCurrentPhrase(getRandomPhrase());
+        tapsSincePhraseChange.current = 0;
+        nextPhraseThreshold.current = getRandomInterval();
+      }
 
       // Gradually change the background color toward green
       const newColor = getNextBgColor(bgColor);
       setBgColor(newColor);
       setLastTapTime(Date.now());
 
-      // Update the counter in the database
-      await databases.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.userCollectionId,
-        user.$id,
-        { counter: newCount }
+      // Add debug log
+      console.log(
+        `Local Counter: ${newCount}, Database Counter: ${dbCounterRef.current}`
       );
+
+      // Track taps and update database ONLY every 50 taps
+      tapsSinceLastUpdate.current += 1;
+      if (tapsSinceLastUpdate.current >= 50) {
+        await databases.updateDocument(
+          appwriteConfig.databaseId,
+          appwriteConfig.userCollectionId,
+          user.$id,
+          { counter: newCount } // Send current counter value
+        );
+        tapsSinceLastUpdate.current = 0; // Reset counter after successful update
+        dbCounterRef.current = newCount; // Update database counter ref
+      }
     } catch (error) {
       console.error("Failed to update counter:", error);
     }
@@ -113,12 +146,15 @@ const Home = () => {
       >
         <View>
           <Text className="text-6xl font-bold text-white text-center">
-            {counter}
+            {localCounter}
           </Text>
           <Text className="text-lg text-gray-100 text-center mt-4">
-            Tap anywhere to count!
+            {currentPhrase}
           </Text>
         </View>
+        <Text className="text-xs text-gray-400 text-center absolute bottom-0 left-0 right-0">
+          (Progress is saved every 50 taps!)
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
