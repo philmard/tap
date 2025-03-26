@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, View, Text, Image, RefreshControl } from "react-native";
-import { databases, appwriteConfig } from "../../lib/appwrite"; // Import databases and config
+import { databases, appwriteConfig } from "../../lib/appwrite";
 import { Query } from "react-native-appwrite";
-import { useFocusEffect } from "@react-navigation/native"; // React Navigation hook
-import { useGlobalContext } from "../../context/GlobalProvider"; // Added import
+import { useFocusEffect } from "@react-navigation/native";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Leaderboard = () => {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { user: currentUser, localCounter } = useGlobalContext(); // Get current user and local counter
+  const { user: currentUser, localCounter } = useGlobalContext();
 
   const fetchLeaderboard = async () => {
     try {
@@ -21,7 +21,6 @@ const Leaderboard = () => {
         [Query.orderDesc("counter"), Query.limit(100)]
       );
 
-      // Always use fresh localCounter from context
       const updatedLeaders = result.documents.map((leader) =>
         leader.$id === currentUser?.$id
           ? { ...leader, counter: localCounter }
@@ -58,7 +57,7 @@ const Leaderboard = () => {
   useFocusEffect(
     useCallback(() => {
       fetchLeaderboard();
-    }, [currentUser?.$id, localCounter]) // Re-fetch when these change
+    }, [currentUser?.$id, localCounter])
   );
 
   return (
@@ -102,9 +101,9 @@ const Leaderboard = () => {
                   key={leader.$id}
                   className={`flex-row items-center ${
                     index % 2 === 0 ? "bg-black-200" : "bg-black-100"
-                  } p-2${
+                  } p-2 ${
                     leader.$id === currentUser?.$id
-                      ? "border-2 border-accent"
+                      ? "bg-green-950" // Subtle highlight for current user
                       : ""
                   }`}
                 >

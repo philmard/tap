@@ -59,18 +59,18 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView ref={scrollViewRef}>
+      <ScrollView ref={scrollViewRef} keyboardShouldPersistTaps="handled">
         <View
           className="w-full flex justify-center h-full px-4 my-6"
           style={{
             minHeight: Dimensions.get("window").height,
           }}
         >
-          <Image
+          {/* <Image
             source={images.tap_logo}
             resizeMode="contain"
             className="w-[115px] h-[34px]"
-          />
+          /> */}
 
           <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
             Log in to Aora
