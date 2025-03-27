@@ -18,7 +18,7 @@ const Leaderboard = () => {
       const result = await databases.listDocuments(
         appwriteConfig.databaseId,
         appwriteConfig.userCollectionId,
-        [Query.orderDesc("counter"), Query.limit(100)]
+        [Query.orderDesc("counter"), Query.limit(5000)]
       );
 
       const updatedLeaders = result.documents.map((leader) =>
@@ -61,8 +61,8 @@ const Leaderboard = () => {
   );
 
   return (
-    <SafeAreaView className="bg-primary flex-1">
-      <View className="flex-1 p-4">
+    <SafeAreaView className="bg-primary flex-1" edges={["top"]}>
+      <View className="flex-1 pt-4 px-4">
         <Text className="text-base text-slate-400 text-center mb-2">
           Pull down to reload!
         </Text>
@@ -83,7 +83,7 @@ const Leaderboard = () => {
           >
             <View className="bg-black-100 rounded-lg overflow-hidden">
               <View className="flex-row bg-secondary p-2">
-                <Text className="flex-1 text-black font-semibold text-center">
+                <Text className="flex-[0.5] text-black font-semibold text-center">
                   Rank
                 </Text>
                 <Text className="flex-1 text-black font-semibold text-center">
@@ -92,7 +92,7 @@ const Leaderboard = () => {
                 <Text className="flex-1 text-black font-semibold text-center">
                   Username
                 </Text>
-                <Text className="flex-1 text-black font-semibold text-center">
+                <Text className="flex-[1.5] text-black font-semibold text-center">
                   Counter
                 </Text>
               </View>
@@ -107,7 +107,7 @@ const Leaderboard = () => {
                       : ""
                   }`}
                 >
-                  <Text className="flex-1 text-gray-100 text-center">
+                  <Text className="flex-[0.5] text-gray-100 text-center">
                     {index + 1}
                   </Text>
                   <View className="flex-1 items-center">
@@ -121,7 +121,7 @@ const Leaderboard = () => {
                     {leader.username}
                     {leader.$id === currentUser?.$id && " (You)"}
                   </Text>
-                  <Text className="flex-1 text-gray-100 text-center">
+                  <Text className="flex-[1.5] text-gray-100 text-center">
                     {leader.counter}
                   </Text>
                 </View>
