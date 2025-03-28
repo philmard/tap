@@ -68,40 +68,15 @@ const rankDetails = [
   {
     title: "Expert",
     range: "10000+",
-    color: "bg-yellow-500",
+    color: "bg-yellow-400",
     textColor: "text-black",
   },
 ];
 
 const Profile = () => {
   const { user, setUser, setIsLogged, localCounter } = useGlobalContext(); // Show the Local Counter (!)
-  // const [counter, setCounter] = useState(user?.counter || 0);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-
-  /* NOT USEFUL, SINCE IM SHOWING THE LOCAL COUNTER: */
-  // Fetch user details and counter from the database
-  // const fetchUserDetails = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const updatedUser = await getCurrentUser(); // Fetch the updated user data
-  //     if (updatedUser) {
-  //       // setUser(updatedUser); // Update global user state
-  //       // setCounter(updatedUser.counter); // Update counter state
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch user details:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // Fetch user details when the screen is focused
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     fetchUserDetails();
-  //   }, [])
-  // );
 
   const getRankInfo = (counter) => {
     if (counter < 200)
@@ -130,7 +105,7 @@ const Profile = () => {
       return { title: "Advanced", bg: "bg-purple-500", text: "text-white" };
     if (counter < 10000)
       return { title: "Proficient", bg: "bg-cyan-500", text: "text-black" };
-    return { title: "Expert", bg: "bg-yellow-500", text: "text-black" };
+    return { title: "Expert", bg: "bg-yellow-400", text: "text-black" };
   };
 
   // Logout function

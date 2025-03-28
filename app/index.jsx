@@ -22,11 +22,9 @@ const Welcome = () => {
         }}
       >
         <View className="w-full flex justify-center items-center h-full px-4">
-          <Image
-            source={images.tap_logo}
-            className="w-[200px] h-[84px]"
-            resizeMode="contain"
-          />
+          <Text className="text-3xl text-white font-bold text-center">
+            Welcome to <Text className="text-secondary-200">TAP!</Text>
+          </Text>
 
           <Image
             source={images.tap_iphone}

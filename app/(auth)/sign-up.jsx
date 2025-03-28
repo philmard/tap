@@ -60,7 +60,7 @@ const SignUp = () => {
           />
 
           <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
-            Sign Up to Aora
+            Sign Up to <Text className="text-secondary-200">TAP!</Text>
           </Text>
 
           <FormField

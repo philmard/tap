@@ -66,14 +66,8 @@ const SignIn = () => {
             minHeight: Dimensions.get("window").height,
           }}
         >
-          {/* <Image
-            source={images.tap_logo}
-            resizeMode="contain"
-            className="w-[115px] h-[34px]"
-          /> */}
-
           <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
-            Log in to Aora
+            Log in to <Text className="text-secondary-200">TAP!</Text>
           </Text>
 
           <FormField
@@ -113,14 +107,14 @@ const SignIn = () => {
           </View>
 
           {/* Redirect to Landing Page Button */}
-          <View className="mt-10">
+          {/* <View className="mt-10">
             <Button
               title="Go to Landing Page / Create random user"
-              onPress={createRandomTestUser}
-              /* onPress={() => router.replace("/")} */
+              // onPress={createRandomTestUser}
+              onPress={() => router.replace("/")}
               color="#ff6347"
             />
-          </View>
+          </View> */}
           <View style={{ height: 200, backgroundColor: "transparent" }} />
         </View>
       </ScrollView>
